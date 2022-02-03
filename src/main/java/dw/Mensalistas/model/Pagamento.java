@@ -21,14 +21,7 @@ public class Pagamento {
     @JoinColumn(name="idjogador",referencedColumnName="cod_jogador")
     private Jogador mJogador;
     
-    public Jogador getmJogador() {
-        return mJogador;
-    }
-
-    public void setmJogador(Jogador mJogador) {
-        this.mJogador = mJogador;
-    }
-
+  
     public Pagamento(){
 
     }

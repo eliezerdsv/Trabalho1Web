@@ -13,7 +13,7 @@ import dw.Mensalistas.model.Jogador;
 import dw.Mensalistas.repository.JogadorRepository;
 
 import java.util.List;
-//import java.util.Optional;
+import java.util.Optional;
 import java.util.ArrayList;
 @RestController
 @RequestMapping("/api")
@@ -55,8 +55,8 @@ public class JogadorController {
         }
     }
 
-    /* @GetMapping("/jogadores/{cod_jogador}")
-    public ResponseEntity<Jogador> getJogadorById(@PathVariable("cod_jogador") long cod_jogador)
+    @GetMapping("/jogadores/{cod_jogador}")
+    public ResponseEntity<Jogador> getJogadorById(@PathVariable("cod_jogador") int cod_jogador)
     {   
         
         Optional<Jogador> data = rep.findById(cod_jogador);
@@ -65,15 +65,15 @@ public class JogadorController {
         } else {
             return new ResponseEntity<>(data.get(),HttpStatus.NOT_FOUND);
         }
-    } */
+    }
 
      /*
     * PUT /api/jogadores/:id : atualizar artigo dado um id
     */
-    /* @PutMapping("/jogadores/{id}")
-    public ResponseEntity<Jogador> updateJogador(@PathVariable("id") long id, @RequestBody Jogador j)
+    @PutMapping("/jogadores/{cod_jogador}")
+    public ResponseEntity<Jogador> updateJogador(@PathVariable("cod_jogador") int cod_jogador, @RequestBody Jogador j)
     {
-        Optional<Jogador> data = rep.findById(id);
+        Optional<Jogador> data = rep.findById(cod_jogador);
 
         if (data.isPresent())
         {
@@ -88,13 +88,13 @@ public class JogadorController {
         else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
-    } */
+    }
 
      /*
     * DEL /api/artigos/:id : remover artigo dado um id
     */
-/*     @DeleteMapping("/jogadores/{id}")
-    public ResponseEntity<HttpStatus> deleteJogador(@PathVariable("id") long id)
+    @DeleteMapping("/jogadores/{id}")
+    public ResponseEntity<HttpStatus> deleteJogador(@PathVariable("id") int id)
     {
         try {
             rep.deleteById(id);
@@ -106,7 +106,7 @@ public class JogadorController {
         }
         
     }
- */
+
      /*
     * DEL /api/artigos : remover todos os artigos
     */

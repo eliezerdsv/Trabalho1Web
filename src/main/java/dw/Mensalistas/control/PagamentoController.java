@@ -1,6 +1,8 @@
 package dw.Mensalistas.control;
 
+import dw.Mensalistas.model.Jogador;
 import dw.Mensalistas.model.Pagamento;
+import dw.Mensalistas.repository.JogadorRepository;
 import dw.Mensalistas.repository.PagamentoRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,8 @@ import java.util.Optional;
 public class PagamentoController {
   @Autowired
   PagamentoRepository pagRep;
+  @Autowired
+  JogadorRepository jRep;
 
   // DEL /api/pagamentos -> listar todos os pagamentos ou um pagamento dado um código de jogador
   @GetMapping("/pagamentos")
@@ -55,9 +59,23 @@ public class PagamentoController {
   // POST /api/pagamentos -> criar pagamento
   @PostMapping("/pagamentos")
   public ResponseEntity<Pagamento> createPagamento(@RequestBody Pagamento pagamento) {
+    
     try {
       Pagamento _pagamento = pagRep.save(new Pagamento(pagamento.getCod_pagamento(), pagamento.getAno(),
           pagamento.getMes(), pagamento.getValor()/*, pagamento.getId()*/));
+
+      return new ResponseEntity<>(_pagamento, HttpStatus.CREATED);
+    } catch (Exception e) {
+      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+  // POST /api/pagamentos -> criar diferenciado
+  @PostMapping("/pagamentosd/{id}")
+  public ResponseEntity<Pagamento> createPagamento2(@PathVariable("id") int id, @RequestBody Pagamento pagamento) {
+    Optional<Jogador> data = jRep.findById(id);
+    try {
+      Pagamento _pagamento = pagRep.save(new Pagamento(pagamento.getCod_pagamento(), pagamento.getAno(),
+          pagamento.getMes(), pagamento.getValor(), data.get()));
 
       return new ResponseEntity<>(_pagamento, HttpStatus.CREATED);
     } catch (Exception e) {

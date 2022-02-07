@@ -22,6 +22,21 @@ public class Pagamento {
     private Jogador mJogador;
     
   
+    public Jogador getmJogador() {
+        return mJogador;
+    }
+
+    public void setmJogador(Jogador mJogador) {
+        this.mJogador = mJogador;
+    }
+
+    public Pagamento(short ano, short mes, double valor, Jogador mJogador) {
+        this.ano = ano;
+        this.mes = mes;
+        this.valor = valor;
+        this.mJogador = mJogador;
+    }
+    
     public Pagamento(){
 
     }
@@ -39,7 +54,14 @@ public class Pagamento {
         this.valor = valor;
        
     }
-
+    public Pagamento(int cod_pagamento, short ano, short mes, double valor, Jogador j) {
+        this.cod_pagamento = cod_pagamento;
+        this.ano = ano;
+        this.mes = mes;
+        this.valor = valor;
+        this.mJogador = j;
+       
+    }
     public int getCod_pagamento() {
         return cod_pagamento;
     }

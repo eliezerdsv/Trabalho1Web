@@ -1,26 +1,26 @@
-/* package dw.Mensalistas.repository;
+/* package dw.Mensalistas.jrepository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.jrepository.Jpajrepository;
 
 import dw.Mensalistas.model.Pagamento;
 
 import java.util.List;
 
-public interface PagamentoRepository extends JpaRepository<Pagamento, Long>{
+public interface Pagamentojrepository extends Jpajrepository<Pagamento, Long>{
     List<Pagamento> findByAno(short ano);
 
     //List<Pagamento> findByNomeContain(String nome);
 
 } */
 
-package dw.Mensalistas.repository;
+package dw.Mensalistas.jrepository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.jrepository.Jpajrepository;
 import dw.Mensalistas.model.Pagamento;
 
 import java.util.List;
 
-public interface PagamentoRepository extends JpaRepository<Pagamento, Integer> {
+public interface Pagamentojrepository extends Jpajrepository<Pagamento, Integer> {
   List<Pagamento> findAll();
 
   //nao necessario

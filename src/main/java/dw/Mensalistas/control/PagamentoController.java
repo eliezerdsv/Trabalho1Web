@@ -3,8 +3,8 @@ package dw.Mensalistas.control;
 
 import dw.Mensalistas.model.Jogador;
 import dw.Mensalistas.model.Pagamento;
-import dw.Mensalistas.jrepository.Jogadorjrepository;
-import dw.Mensalistas.jrepository.Pagamentojrepository;
+import dw.Mensalistas.repository.Jogadorrepository;
+import dw.Mensalistas.repository.Pagamentorepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,9 +28,9 @@ import java.util.Optional;
 @RequestMapping("/api")
 public class PagamentoController {
   @Autowired
-  Pagamentojrepository pjrep;
+  Pagamentorepository prep;
   @Autowired
-  Jogadorjrepository jjrep;
+  Jogadorrepository jrep;
 
   // DEL /api/pagamentos -> listar todos os pagamentos ou um pagamento dado um código de jogador
   @GetMapping("/pagamentos")
@@ -41,11 +41,11 @@ public class PagamentoController {
       List<Pagamento> listPag = new ArrayList<Pagamento>();   //Cria um vetor que terá todos os pagamentos
 
       if (id == null) {
-        pjrep.findAll().forEach(listPag::add);
+        prep.findAll().forEach(listPag::add);
       } else {
           int id2 = Integer.parseInt(id);
 		  //findById retorna somente um objeto. forEach nao é aplicado.
-		listPag.add(pjrep.findById(id2).get());//.forEach(listPag::add);
+		listPag.add(prep.findById(id2).get());//.forEach(listPag::add);
       }
 
       if (listPag.isEmpty()) {    //Se o objeto não possuir conteúdo
@@ -64,7 +64,7 @@ public class PagamentoController {
   public ResponseEntity<Pagamento> createPagamento(@RequestBody Pagamento pagamento) {   //Cria um novo pagamento
     
     try {
-      Pagamento _pagamento = pjrep.save(new Pagamento(pagamento.getCod_pagamento(), pagamento.getAno(),   
+      Pagamento _pagamento = prep.save(new Pagamento(pagamento.getCod_pagamento(), pagamento.getAno(),   
           pagamento.getMes(), pagamento.getValor()));      //Cria um novo pagamento com o ID, ano, mês e valor
 
       return new ResponseEntity<>(_pagamento, HttpStatus.CREATED);    //Se não houver exceção é retornada uma entidade de resposta com a informação de que o pagamento foi criado
@@ -75,9 +75,9 @@ public class PagamentoController {
   
   @PostMapping("/pagamentosd/{id}")
   public ResponseEntity<Pagamento> createPagamento2(@PathVariable("id") int id, @RequestBody Pagamento pagamento) {
-    Optional<Jogador> data = jjrep.findById(id);
+    Optional<Jogador> data = jrep.findById(id);
     try {
-      Pagamento _pagamento = pjrep.save(new Pagamento(pagamento.getCod_pagamento(), pagamento.getAno(),
+      Pagamento _pagamento = prep.save(new Pagamento(pagamento.getCod_pagamento(), pagamento.getAno(),
           pagamento.getMes(), pagamento.getValor(), data.get()));
 
       return new ResponseEntity<>(_pagamento, HttpStatus.CREATED);
@@ -90,7 +90,7 @@ public class PagamentoController {
   @PostMapping("/pagamentos/{id}")
   public ResponseEntity<Pagamento> updatePagamento(@PathVariable("id") int id, @RequestBody Pagamento pagamento) {
    
-    Optional<Pagamento> data = pjrep.findById(id);
+    Optional<Pagamento> data = prep.findById(id);
 
     if (data.isPresent()) {
       Pagamento pag = data.get();
@@ -99,7 +99,7 @@ public class PagamentoController {
       pag.setValor(pagamento.getValor());
       pag.setCod_pagamento(pagamento.getCod_pagamento());
 
-      return new ResponseEntity<>(pjrep.save(pag), HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>(prep.save(pag), HttpStatus.NOT_FOUND);
     }
     else {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -110,7 +110,7 @@ public class PagamentoController {
   @DeleteMapping("/pagamentos/{id}")
   public ResponseEntity<HttpStatus> deletePagamento(@PathVariable("cod_pagamento") int id) {
     try {
-      pjrep.deleteById(id);
+      prep.deleteById(id);
       return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     catch (Exception e) {
@@ -122,7 +122,7 @@ public class PagamentoController {
   @DeleteMapping("/pagamentos")
   public ResponseEntity<HttpStatus> deleteAllPagamento() {
     try {
-      pjrep.deleteAll();
+      prep.deleteAll();
       return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     catch (Exception e) {

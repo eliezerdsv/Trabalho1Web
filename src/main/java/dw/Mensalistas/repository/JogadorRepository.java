@@ -1,12 +1,12 @@
-package dw.Mensalistas.jrepository;
+package dw.Mensalistas.repository;
 
-import org.springframework.data.jpa.jrepository.Jpajrepository;
+import org.springframework.data.jpa.repository.Jparepository;
 
 import dw.Mensalistas.model.Jogador;
 
 import java.util.List;
 
-public interface Jogadorjrepository extends Jpajrepository<Jogador, Integer>{
+public interface Jogadorrepository extends Jparepository<Jogador, Integer>{
     //List<Jogador> findByPublicado(boolean publicado);
     //Jogador> findByCodJogador(int cod_jogador);
     List<Jogador> findByNomeContaining(String nome);

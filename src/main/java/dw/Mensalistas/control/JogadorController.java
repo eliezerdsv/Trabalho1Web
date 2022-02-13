@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 import dw.Mensalistas.model.Jogador;
-import dw.Mensalistas.jrepository.Jogadorjrepository;
+import dw.Mensalistas.repository.Jogadorrepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,15 +21,15 @@ import java.util.ArrayList;
 @RequestMapping("/api")
 public class JogadorController {
     @Autowired
-    Jogadorjrepository jrep;
+    Jogadorrepository rep;
 
     @GetMapping("/jogadores")
     public ResponseEntity<List<Jogador>> getAllJogadores(@RequestParam(required = false) String nome){  //Coloca todos os jogadores em um vetor
         try {
             List<Jogador> lj = new ArrayList<Jogador>();    //Cria um vetor que irá conter os jogadores
             if(nome == null){   //Se o nome do jogador for nulo
-                jrep.findAll().forEach(lj::add); 
-            }else jrep.findByNomeContaining(nome).forEach(lj::add);
+                rep.findAll().forEach(lj::add); 
+            }else rep.findByNomeContaining(nome).forEach(lj::add);
 
             if(lj.isEmpty()){       //Se o objeto não tiver conteúdo
                 return new ResponseEntity<>(null,HttpStatus.NO_CONTENT);    //Retorna uma entidade de resposta que informa que o objeto não tem conteúdo
@@ -49,7 +49,7 @@ y<>(lj,HttpStatus.OK);      //Retorna uma entidade de resposta que informa que a
     public ResponseEntity<Jogador> createJogador(@RequestBody Jogador j){   //Cria um novo jogador
         
         try {
-            Jogador _j = jrep.save(new Jogador(j.getNome(),j.getEmail(),j.getDatanasc()));   //Cria um novo jogador com nome, email e data de nascimento
+            Jogador _j = rep.save(new Jogador(j.getNome(),j.getEmail(),j.getDatanasc()));   //Cria um novo jogador com nome, email e data de nascimento
             return new ResponseEntity<>(_j,HttpStatus.CREATED);     //Retorna uma entidade de resposta que informa que o jogador foi criado
         } catch (Exception e) { //Tenta pegar a exceção
             
@@ -61,7 +61,7 @@ y<>(lj,HttpStatus.OK);      //Retorna uma entidade de resposta que informa que a
     public ResponseEntity<Jogador> getJogadorById(@PathVariable("cod_jogador") int cod_jogador)     //Retorna um jogador através do ID
     {   
         
-        Optional<Jogador> data = jrep.findById(cod_jogador);     //Cria uma variável data para verificar se o objeto tem conteúdo
+        Optional<Jogador> data = rep.findById(cod_jogador);     //Cria uma variável data para verificar se o objeto tem conteúdo
         if (data.isPresent()) {     //Se o objeto com o ID informado tiver conteúdo
             return new ResponseEntity<>(data.get(),HttpStatus.OK);      //Retorna os dados do jogador
         } else {    //Se o objeto não tiver conteúdo
@@ -73,7 +73,7 @@ y<>(lj,HttpStatus.OK);      //Retorna uma entidade de resposta que informa que a
     @PutMapping("/jogadores/{cod_jogador}")
     public ResponseEntity<Jogador> updateJogador(@PathVariable("cod_jogador") int cod_jogador, @RequestBody Jogador j)    //Atualiza os atributos do jogador
     {
-        Optional<Jogador> data = jrep.findById(cod_jogador);     //Cria uma variável para verificar se o objeto tem conteúdo
+        Optional<Jogador> data = rep.findById(cod_jogador);     //Cria uma variável para verificar se o objeto tem conteúdo
 
         if (data.isPresent())   //Se o objeto tiver conteúdo
         {
@@ -83,7 +83,7 @@ y<>(lj,HttpStatus.OK);      //Retorna uma entidade de resposta que informa que a
             jr.setDatanasc(j.getDatanasc());//Atualiza a Data de Nascimento
             
 
-            return new ResponseEntity<>(jrep.save(jr), HttpStatus.OK);   //Retorna uma entidade de resposta informando que o objeto foi atualizado   
+            return new ResponseEntity<>(rep.save(jr), HttpStatus.OK);   //Retorna uma entidade de resposta informando que o objeto foi atualizado   
 
         }
         else    //Se o objeto não tiver o conteúdo
@@ -98,7 +98,7 @@ y<>(lj,HttpStatus.OK);      //Retorna uma entidade de resposta que informa que a
     public ResponseEntity<HttpStatus> deleteJogador(@PathVariable("id") int id)     //Deleta um jogador através do ID
     {
         try {
-            jrep.deleteById(id);     //Deleta o objeto de jogador com id informado
+            rep.deleteById(id);     //Deleta o objeto de jogador com id informado
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);     //Retorna uma entidade de resposta informando que o objeto deletado não tem conteúdo   
             
         } catch (Exception e) {     //Tenta pegar uma exceção
@@ -113,7 +113,7 @@ y<>(lj,HttpStatus.OK);      //Retorna uma entidade de resposta que informa que a
     public ResponseEntity<HttpStatus> deleteAllJogador()      //Deleta todos os jogadores
     {
         try {
-            jrep.deleteAll();    //Deleta todos os jogadores
+            rep.deleteAll();    //Deleta todos os jogadores
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);  //Retorna uma mensagem de resposta informando que o objeto deletado não tem conteúdo   
             
         } catch (Exception e) {     //Tenta pegar uma exceção

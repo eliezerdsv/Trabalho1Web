@@ -1,6 +1,6 @@
 package dw.Mensalistas.control;
 
-//imports
+
 import dw.Mensalistas.model.Jogador;
 import dw.Mensalistas.model.Pagamento;
 import dw.Mensalistas.repository.JogadorRepository;
@@ -17,114 +17,118 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+//Importação de Pacotes e Bibliotecas
+
 @RestController
 @RequestMapping("/api")
-public class PagamentoController {
+public class PagamentoController {   
   @Autowired
   PagamentoRepository pagRep;
   @Autowired
   JogadorRepository jRep;
 
-  // DEL /api/pagamentos -> listar todos os pagamentos ou um pagamento dado um código de jogador
+  
   @GetMapping("/pagamentos")
-  public ResponseEntity<List<Pagamento>> getAllPagamentos(
+  public ResponseEntity<List<Pagamento>> getAllPagamentos(    //Pegar todos os pagamentos através do ID de um jogador
       @RequestParam(required = false) String id) {
 
     try {
-      List<Pagamento> listPag = new ArrayList<Pagamento>();
+      List<Pagamento> listPag = new ArrayList<Pagamento>();   //Cria um vetor que terá todos os pagamentos
 
-      if (id == null) {
+      if (id == null) {   //Se não houver ID
         pagRep.findAll().forEach(listPag::add);
       } else {
           int id2 = Integer.parseInt(id);
-		  //findById retorna somente um objeto. forEach nao é aplicado.
-		listPag.add(pagRep.findById(id2).get());//.forEach(listPag::add);
+		 
+		listPag.add(pagRep.findById(id2).get());
       }
 
-      if (listPag.isEmpty()) {
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+      if (listPag.isEmpty()) {    //Se não houverem pagamentos
+        return new ResponseEntity<>(HttpStatus.OK);   //É retornada uma entidade de resposta que mostra que o objeto não tem conteúdo
       }
 
-      return new ResponseEntity<>(listPag, HttpStatus.ACCEPTED);
+      return new ResponseEntity<>(listPag, HttpStatus.ACCEPTED);    //Retorna o pagamento
 
-    } catch (Exception e) {
-      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    } catch (Exception e) {     //Tenta pegar uma exceção
+      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);     //Se for pega uma exceção é porque provavelmente ocorreu um erro de comunicação com o banco
     }
   }
 
-  // POST /api/pagamentos -> criar pagamento
+  
   @PostMapping("/pagamentos")
-  public ResponseEntity<Pagamento> createPagamento(@RequestBody Pagamento pagamento) {
+  public ResponseEntity<Pagamento> createPagamento(@RequestBody Pagamento pagamento) {    //Cria um novo pagamento
     
     try {
       Pagamento _pagamento = pagRep.save(new Pagamento(pagamento.getCod_pagamento(), pagamento.getAno(),
-          pagamento.getMes(), pagamento.getValor()/*, pagamento.getId()*/));
+          pagamento.getMes(), pagamento.getValor()));  //Cria um novo pagamento com o ID, ano, mês e valor
 
-      return new ResponseEntity<>(_pagamento, HttpStatus.CREATED);
+      return new ResponseEntity<>(_pagamento, HttpStatus.CREATED);    //Se não houver exceção é retornada uma entidade de resposta com a informação de que o pagamento foi criado
     } catch (Exception e) {
-      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);    //Se for pega uma exceção é porque provavelmente ocorreu um erro de comunicação com o banco
     }
   }
-  // POST /api/pagamentos -> criar diferenciado
-  @PostMapping("/pagamentosd/{id}")
-  public ResponseEntity<Pagamento> createPagamento2(@PathVariable("id") int id, @RequestBody Pagamento pagamento) {
-    Optional<Jogador> data = jRep.findById(id);
+ 
+  @PostMapping("/pagamentosid/{id}")
+  public ResponseEntity<Pagamento> createPagamento2(@PathVariable("id") int id, @RequestBody Pagamento pagamento) {    //Cria um novo pagamento através da ID de um jogador
+    Optional<Jogador> data = jRep.findById(id);   //Cria uma variável data com os dados do jogador cujo ID foi informado
     try {
-      Pagamento _pagamento = pagRep.save(new Pagamento(pagamento.getCod_pagamento(), pagamento.getAno(),
-          pagamento.getMes(), pagamento.getValor(), data.get()));
+      Pagamento _pagamento = pagRep.save(new Pagamento(pagamento.getCod_pagamento(), pagamento.getAno(),  
+          pagamento.getMes(), pagamento.getValor(), data.get()));   //Cria um novo pagamento com Id, ano, mês e valor
 
-      return new ResponseEntity<>(_pagamento, HttpStatus.CREATED);
-    } catch (Exception e) {
-      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(_pagamento, HttpStatus.CREATED);  //Se não houver exceção, retorna uma entidade de resposta
+    } catch (Exception e) {     //Tenta pegar uma exceção
+      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);    //Se for pega uma exceção é porque provavelmente ocorreu um erro de comunicação com o banco
     }
   }
 
-  // PUT /api/pagamentos/:cod_pagamento -> atualizar pagamento dado um id
-  @PostMapping("/pagamentos/{id}")
-  public ResponseEntity<Pagamento> updatePagamento(@PathVariable("id") int id, @RequestBody Pagamento pagamento) {
+  
+  @PutMapping("/pagamentos/{cod_pagamento}")
+  public ResponseEntity<Pagamento> updatePagamento(@PathVariable("cod_pagamento") int cod_pagamento, @RequestBody Pagamento pagamento) {
    
-    Optional<Pagamento> data = pagRep.findById(id);
+    Optional<Pagamento> data = pagRep.findById(cod_pagamento);     //Cria uma variável data que irá receber os dados de do pagamento com o ID fornecido
 
-    if (data.isPresent()) {
-      Pagamento pag = data.get();
-      pag.setMes(pagamento.getMes());
-      pag.setAno(pagamento.getMes());
-      pag.setValor(pagamento.getValor());
-      pag.setCod_pagamento(pagamento.getCod_pagamento());
+    if (data.isPresent())   //Se houver conteúdo nesse ID
+    {
+      Pagamento pag = data.get();   //Cria uma variável do tipo Pagamento que irá receber os dados de data
+      pag.setMes(pagamento.getMes());   //Atualiza o Mês
+      pag.setAno(pagamento.getAno());    //Atualiza o Ano
+      pag.setValor(pagamento.getValor()); //Atualiza o Valor
+      
 
-      return new ResponseEntity<>(pagRep.save(pag), HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>(pagRep.save(pag), HttpStatus.OK);   //Retorna uma entidade de resposta informando que a ação foi realizada com sucesso
     }
     else {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);    //Retorna uma entidade de resposta informando que não foram encontrados dados
     }
   }
 
-  // DEL /api/pagamentos/:cod_pagamento -> remover pagamento dado id
-  @DeleteMapping("/pagamentos/{id}")
-  public ResponseEntity<HttpStatus> deletePagamento(@PathVariable("cod_pagamento") int id) {
+  
+  @DeleteMapping("/pagamentos/{cod_pagamento}")
+  public ResponseEntity<HttpStatus> deletePagamento(@PathVariable("cod_pagamento") int cod_pagamento) {   //Deleta o pagamento através de um ID
     try {
-      pagRep.deleteById(id);
-      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+      pagRep.deleteById(cod_pagamento);     //Deleta o pagamento através do ID fornecido 
+      return new ResponseEntity<>(HttpStatus.NO_CONTENT);   //Retorna uma entidade de resposta mostrando que o objeto que teve o pagamento deletado não tem mais este conteúdo
     }
-    catch (Exception e) {
-      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    catch (Exception e) {     //Tenta pegar uma exceção
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);    //Se houver excessão, provavelmente será devido a uma falha de comunicação com o banco
     }
   }
 
-  // DEL /api/pagamentos -> remover todos os pagamentos
+  
   @DeleteMapping("/pagamentos")
-  public ResponseEntity<HttpStatus> deleteAllPagamento() {
+  public ResponseEntity<HttpStatus> deleteAllPagamento() {    //Irá deletar todos os pagamentos
     try {
-      pagRep.deleteAll();
-      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+      pagRep.deleteAll();   //Deleta todos os pagamentos
+      return new ResponseEntity<>(HttpStatus.NO_CONTENT);    //Retorna uma entidade de resposta mostrando que o objeto que teve o pagamento deletado não tem mais este conteúdo
     }
-    catch (Exception e) {
-      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    catch (Exception e) {   //Tenta pegar uma exceção
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);    //Se houver excessão, provavelmente será devido a uma falha de comunicação com o banco
     }
   }
 }
